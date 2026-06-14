@@ -7,6 +7,7 @@ import { roasOptimizer } from '../services/roasOptimizer';
 import { dataValidator } from '../services/dataValidator';
 import { causalInferenceEngine } from '../services/causalInference';
 import { operationalInsightsGenerator } from '../services/operationalInsights';
+import { llmService } from '../services/llmService';
 import logger from '../utils/logger';
 
 export async function getMetrics(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -167,6 +168,70 @@ export async function getDataValidation(req: Request, res: Response, next: NextF
         report,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function explainAnomaly(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { anomaly, context } = req.body;
+    if (!anomaly) throw new ValidationError('anomaly is required');
+
+    const explanation = await llmService.interpretAnomaly(anomaly, context);
+    res.json({ success: true, explanation });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getRiskAnalysis(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { forecastData, anomalies } = req.body;
+    if (!forecastData) throw new ValidationError('forecastData is required');
+
+    const risks = await llmService.identifyRisks(forecastData, anomalies || []);
+    res.json({ success: true, risks });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getBudgetAdvice(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { budgets, roasByChannel, marginalROI } = req.body;
+    if (!budgets || !roasByChannel) throw new ValidationError('budgets and roasByChannel are required');
+
+    const recommendations = await llmService.generateBudgetRecommendations(
+      budgets,
+      roasByChannel,
+      marginalROI || {}
+    );
+    res.json({ success: true, recommendations });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getCausalSummary(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { causalDrivers } = req.body;
+    if (!causalDrivers) throw new ValidationError('causalDrivers is required');
+
+    const summary = await llmService.generateCausalSummary(causalDrivers);
+    res.json({ success: true, summary });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getForecastExplanation(req: Request, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { forecastData } = req.body;
+    if (!forecastData) throw new ValidationError('forecastData is required');
+
+    const explanation = await llmService.explainForecast(forecastData);
+    res.json({ success: true, explanation });
   } catch (err) {
     next(err);
   }

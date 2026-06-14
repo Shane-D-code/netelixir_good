@@ -6,6 +6,7 @@ import { saveForecast, getForecast } from '../database';
 import { ValidationError, NotFoundError } from '../middleware/errorHandler';
 import { ForecastComparison } from '../services/forecastComparison';
 import { ExportService } from '../services/exportService';
+import { llmService } from '../services/llmService';
 import logger from '../utils/logger';
 
 const parseJSON = (val: any) => {
@@ -77,7 +78,20 @@ export async function generateForecast(req: Request, res: Response, next: NextFu
     logger.info(`Forecast job ${jobId} created with params: ${JSON.stringify({ ...params, channel_budgets: params.channel_budgets })}`);
 
     generateForecastWithTracking(csvContent, params, jobId)
-      .then((result) => {
+      .then(async (result) => {
+        if (params.enable_ai_insights !== false) {
+          try {
+            const insights = await llmService.generateForecastInsights(
+              result,
+              result.anomalies || [],
+              result.causal_drivers || [],
+              { budgets: params.channel_budgets }
+            );
+            result.ai_insights = insights;
+          } catch (err: any) {
+            logger.warn(`AI insights not available for job ${jobId}`, { error: err.message });
+          }
+        }
         saveForecast(jobId, params, result);
         logger.info(`Forecast job ${jobId} completed successfully`);
       })

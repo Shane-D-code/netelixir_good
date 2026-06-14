@@ -81,6 +81,18 @@ Enterprise-grade probabilistic forecasting platform for e-commerce revenue predi
 │  └─────────────────────────────────────────────────────────────────┘   │
 │                                                                         │
 │  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │               LLM AI INSIGHTS (Groq → Gemini)                    │   │
+│  │  ┌────────────┐ ┌──────────┐ ┌──────────┐ ┌───────────────┐   │   │
+│  │  │  Forecast  │ │  Anomaly │ │  Risk    │ │  Budget       │   │   │
+│  │  │  Explain   │ │Interpret │ │ Identify │ │  Recommend    │   │   │
+│  │  └────────────┘ └──────────┘ └──────────┘ └───────────────┘   │   │
+│  │  ┌────────────┐ ┌──────────┐                                   │   │
+│  │  │  Causal    │ │ Fallback │                                   │   │
+│  │  │  Summary   │ │ (no-API) │                                   │   │
+│  │  └────────────┘ └──────────┘                                   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
 │  │               Infrastructure Services                           │   │
 │  │  ┌────────────┐ ┌──────────┐ ┌──────────┐ ┌───────────────┐   │   │
 │  │  │  SQLite    │ │  Redis   │ │WebSocket │ │Swagger Docs   │   │   │
@@ -122,6 +134,7 @@ User Uploads CSV
 | Auth | JWT |
 | Docs | Swagger / OpenAPI |
 | Monitoring | prom-client (Prometheus metrics) |
+| LLM AI | Groq API (primary) + Gemini API (fallback) for insights |
 | Container | Docker, Docker Compose, Nginx |
 
 ## Quick Start
@@ -168,6 +181,11 @@ cd forecastai-app && docker-compose up -d --build
 | `/api/analytics/roas-optimize` | POST | ROAS optimization |
 | `/api/analytics/validate` | POST | Data validation |
 | `/api/analytics/insights` | POST | Operational insights |
+| `/api/analytics/explain/anomaly` | POST | AI anomaly interpretation |
+| `/api/analytics/explain/forecast` | POST | AI forecast explanation |
+| `/api/analytics/risks` | POST | AI operational risk identification |
+| `/api/analytics/budget-advice` | POST | AI budget recommendations |
+| `/api/analytics/causal-summary` | POST | AI causal summary |
 | `/api/holidays` | GET | Holiday calendar |
 | `/api/holidays/upcoming` | GET | Upcoming holidays |
 | `/api/holidays/check/:date` | GET | Check holiday impact |
@@ -182,6 +200,20 @@ The forecasting engine uses a **4-model ensemble** with **Monte Carlo simulation
 4. **Gradient Boosting** — Iterative residual correction
 
 Output: Probabilistic forecasts at **P10/P25/P50/P75/P90** confidence levels.
+
+## LLM AI Integration
+
+The platform uses **Groq API (primary)** with **Gemini API (fallback)** for AI-powered insights:
+
+| Feature | Endpoint | Description |
+|---------|----------|-------------|
+| **Forecast Explanation** | `POST /api/analytics/explain/forecast` | Human-readable explanation of forecast results |
+| **Anomaly Interpretation** | `POST /api/analytics/explain/anomaly` | Explains why anomalies occurred |
+| **Risk Identification** | `POST /api/analytics/risks` | Identifies top operational risks |
+| **Budget Recommendations** | `POST /api/analytics/budget-advice` | AI-driven budget reallocation advice |
+| **Causal Summary** | `POST /api/analytics/causal-summary` | Executive summary of causal drivers |
+
+The service automatically falls back to Gemini if Groq is unavailable, and uses rule-based fallbacks if neither API key is set.
 
 ## Project Structure
 
@@ -222,6 +254,8 @@ See `forecastai-app/backend/.env`:
 | `CORS_ORIGIN` | http://localhost:3000 | Allowed CORS origin |
 | `RATE_LIMIT_WINDOW_MS` | 900000 | Rate limit window (15min) |
 | `RATE_LIMIT_MAX_REQUESTS` | 100 | Max requests per window |
+| `GROQ_API_KEY` | — | Groq API key (primary LLM, free tier) |
+| `GEMINI_API_KEY` | — | Gemini API key (fallback LLM, free tier) |
 
 ## License
 

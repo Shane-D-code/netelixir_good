@@ -10,7 +10,7 @@ import { authenticate, optionalAuth } from './middleware/auth';
 import { validateForecastRequest, validateBudgetSimulation, validateCSVUpload } from './middleware/validation';
 import { generateForecast, getForecastStatus, exportForecastCSV, compareForecast, exportForecastMulti } from './controllers/forecastController';
 import { simulateBudget, optimizeBudget, getElasticityCurve } from './controllers/budgetController';
-import { getMetrics, getAnomalies, getCausalAnalysis, getCampaignAnalysis, getSeasonality, getROASOptimization, getDataValidation, getOperationalInsights } from './controllers/analyticsController';
+import { getMetrics, getAnomalies, getCausalAnalysis, getCampaignAnalysis, getSeasonality, getROASOptimization, getDataValidation, getOperationalInsights, explainAnomaly, getRiskAnalysis, getBudgetAdvice, getCausalSummary, getForecastExplanation } from './controllers/analyticsController';
 import { uploadCSV } from './controllers/uploadController';
 import { register, login } from './controllers/authController';
 import { getHealth, getReadiness } from './controllers/healthController';
@@ -98,6 +98,13 @@ app.post('/api/analytics/seasonality', authenticate, jsonParser, getSeasonality)
 app.post('/api/analytics/roas-optimize', authenticate, jsonParser, getROASOptimization);
 app.post('/api/analytics/validate', authenticate, jsonParser, getDataValidation);
 app.post('/api/analytics/insights', authenticate, jsonParser, getOperationalInsights);
+
+// LLM-powered AI insights
+app.post('/api/analytics/explain/anomaly', authenticate, jsonParser, explainAnomaly);
+app.post('/api/analytics/explain/forecast', authenticate, jsonParser, getForecastExplanation);
+app.post('/api/analytics/risks', authenticate, jsonParser, getRiskAnalysis);
+app.post('/api/analytics/budget-advice', authenticate, jsonParser, getBudgetAdvice);
+app.post('/api/analytics/causal-summary', authenticate, jsonParser, getCausalSummary);
 
 // Holidays
 app.get('/api/holidays', authenticate, getHolidays);
