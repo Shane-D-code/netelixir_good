@@ -3,6 +3,7 @@ import { parse } from 'csv-parse/sync';
 import { ForecastRequest, RawDataRow } from '../models/ForecastRequest';
 import { ForecastResult } from '../models/ForecastResult';
 import { runForecastPipeline } from './mlService';
+import { mlClient } from './mlClient';
 import { generateCacheKey, getCachedResult, setCachedResult } from '../utils/cache';
 import logger from '../utils/logger';
 
@@ -85,6 +86,55 @@ export function validateData(data: RawDataRow[]): string[] {
   return warnings;
 }
 
+function mergeMLResult(
+  mlForecast: { median: number[]; p10: number[]; p90: number[]; p5: number[]; p95: number[]; model_weights: Record<string, number> },
+  rawData: RawDataRow[],
+  params: ForecastRequest
+): any {
+  const startDate = new Date(rawData[0]?.date || '2024-01-01');
+  const forecastDates: string[] = [];
+  for (let i = 0; i < params.forecast_days; i++) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + rawData.length + i);
+    forecastDates.push(d.toISOString().split('T')[0]);
+  }
+
+  const heuristic = runForecastPipeline(
+    rawData,
+    params.channel_budgets,
+    params.forecast_days,
+    params.confidence_level,
+    params.n_simulations,
+    {
+      enableAnomalyDetection: params.enable_anomaly_detection ?? true,
+      enableCausalInference: params.enable_causal_inference ?? true,
+      enableCampaignDecomposition: params.enable_campaign_decomposition ?? true,
+      enableRiskMetrics: params.enable_risk_metrics ?? true,
+    }
+  );
+
+  const p25 = mlForecast.p10.map((v: number, i: number) => (v + (mlForecast.median[i] || v)) / 2);
+  const p75 = mlForecast.median.map((v: number, i: number) => (v + (mlForecast.p90[i] || v)) / 2);
+
+  return {
+    ...heuristic,
+    model_weights: mlForecast.model_weights,
+    total_forecast: {
+      ...heuristic.total_forecast,
+      median: mlForecast.median,
+      p10: mlForecast.p10,
+      p90: mlForecast.p90,
+      p25,
+      p75,
+      dates: forecastDates,
+      all_simulations: heuristic.total_forecast.all_simulations,
+    },
+    p10_revenue: mlForecast.p10.reduce((a: number, b: number) => a + b, 0),
+    p50_revenue: mlForecast.median.reduce((a: number, b: number) => a + b, 0),
+    p90_revenue: mlForecast.p90.reduce((a: number, b: number) => a + b, 0),
+  };
+}
+
 export class ForecastService {
   async generateForecast(
     csvContent: string,
@@ -112,19 +162,36 @@ export class ForecastService {
 
     logger.info(`Running forecast pipeline for ${rawData.length} rows across ${new Set(rawData.map(r => r.channel)).size} channels`);
 
-    const result = runForecastPipeline(
-      rawData,
-      params.channel_budgets,
-      params.forecast_days,
-      params.confidence_level,
-      params.n_simulations,
-      {
-        enableAnomalyDetection: params.enable_anomaly_detection ?? true,
-        enableCausalInference: params.enable_causal_inference ?? true,
-        enableCampaignDecomposition: params.enable_campaign_decomposition ?? true,
-        enableRiskMetrics: params.enable_risk_metrics ?? true,
+    let mlResult: any = null;
+    try {
+      const mlResponse = await mlClient.forecast({
+        data: rawData,
+        forecast_days: params.forecast_days,
+        n_simulations: params.n_simulations,
+      });
+      if (mlResponse?.success) {
+        mlResult = mlResponse.forecast;
+        logger.info('ML service forecast used as primary');
       }
-    );
+    } catch {
+      logger.info('ML service unavailable, using heuristic forecast');
+    }
+
+    const result = mlResult
+      ? mergeMLResult(mlResult, rawData, params)
+      : runForecastPipeline(
+          rawData,
+          params.channel_budgets,
+          params.forecast_days,
+          params.confidence_level,
+          params.n_simulations,
+          {
+            enableAnomalyDetection: params.enable_anomaly_detection ?? true,
+            enableCausalInference: params.enable_causal_inference ?? true,
+            enableCampaignDecomposition: params.enable_campaign_decomposition ?? true,
+            enableRiskMetrics: params.enable_risk_metrics ?? true,
+          }
+        );
 
     const processingTime = Date.now() - startTime;
 
