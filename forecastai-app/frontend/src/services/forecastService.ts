@@ -1,4 +1,5 @@
 import api from './api';
+import { subscribeForecast } from './socketService';
 import { ForecastResult, RawDataRow } from '../types';
 
 interface GenerateResponse {
@@ -78,25 +79,68 @@ async function pollForecastResult(
   jobId: string,
   onProgress?: (progress: number, status: string) => void
 ): Promise<ForecastResult> {
-  const poll = async (): Promise<ForecastResult> => {
-    const response = await api.get<StatusResponse>(`/forecast/status/${jobId}`);
-    const { status, progress, error, result } = response.data;
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    let pollInterval: ReturnType<typeof setInterval>;
 
-    onProgress?.(progress, status);
+    const unsubscribe = subscribeForecast(jobId, {
+      onStatus: (status, progress) => {
+        onProgress?.(progress, status);
+      },
+      onComplete: (result) => {
+        if (!resolved) {
+          resolved = true;
+          clearInterval(pollInterval);
+          unsubscribe();
+          resolve(result);
+        }
+      },
+      onFailed: (error) => {
+        if (!resolved) {
+          resolved = true;
+          clearInterval(pollInterval);
+          unsubscribe();
+          reject(new Error(error || 'Forecast generation failed'));
+        }
+      },
+    });
 
-    if (status === 'completed' && result) {
-      return result;
-    }
+    pollInterval = setInterval(async () => {
+      try {
+        const response = await api.get<StatusResponse>(`/forecast/status/${jobId}`);
+        const { status, progress, error, result } = response.data;
 
-    if (status === 'failed') {
-      throw new Error(error || 'Forecast generation failed');
-    }
+        onProgress?.(progress, status);
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    return poll();
-  };
+        if (status === 'completed' && result) {
+          if (!resolved) {
+            resolved = true;
+            clearInterval(pollInterval);
+            unsubscribe();
+            resolve(result);
+          }
+        }
 
-  return poll();
+        if (status === 'failed') {
+          if (!resolved) {
+            resolved = true;
+            clearInterval(pollInterval);
+            unsubscribe();
+            reject(new Error(error || 'Forecast generation failed'));
+          }
+        }
+      } catch {
+        // polling error — WebSocket will handle if connected
+      }
+    }, 3000);
+
+    setTimeout(() => {
+      if (!resolved) {
+        clearInterval(pollInterval);
+        reject(new Error('Forecast generation timed out'));
+      }
+    }, 10 * 60 * 1000);
+  });
 }
 
 export const uploadAPI = {
@@ -153,5 +197,30 @@ export const analyticsAPI = {
   getCausal: async (data: RawDataRow[]) => {
     const response = await api.post('/analytics/causal', { data });
     return response.data.data;
+  },
+
+  explainAnomaly: async (anomaly: any, context?: any) => {
+    const response = await api.post('/analytics/explain/anomaly', { anomaly, context });
+    return response.data.explanation;
+  },
+
+  explainForecast: async (forecastData: any) => {
+    const response = await api.post('/analytics/explain/forecast', { forecastData });
+    return response.data.explanation;
+  },
+
+  getRiskAnalysis: async (forecastData: any, anomalies?: any[]) => {
+    const response = await api.post('/analytics/risks', { forecastData, anomalies });
+    return response.data.risks;
+  },
+
+  getBudgetAdvice: async (budgets: Record<string, number>, roasByChannel: Record<string, number>, marginalROI?: Record<string, number>) => {
+    const response = await api.post('/analytics/budget-advice', { budgets, roasByChannel, marginalROI });
+    return response.data.recommendations;
+  },
+
+  getCausalSummary: async (causalDrivers: any[]) => {
+    const response = await api.post('/analytics/causal-summary', { causalDrivers });
+    return response.data.summary;
   },
 };
