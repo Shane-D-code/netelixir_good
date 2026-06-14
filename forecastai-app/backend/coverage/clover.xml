@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1781427280319" clover="3.2.0">
+  <project timestamp="1781427280319" name="All files">
+    <metrics statements="59" coveredstatements="55" conditionals="12" coveredconditionals="9" methods="16" coveredmethods="14" elements="87" coveredelements="78" complexity="0" loc="59" ncloc="59" packages="2" files="2" classes="2"/>
+    <package name="src">
+      <metrics statements="20" coveredstatements="20" conditionals="3" coveredconditionals="3" methods="7" coveredmethods="7"/>
+      <file name="websocket.ts" path="/Users/shantanu/Desktop/netelixir/forecastai-app/backend/src/websocket.ts">
+        <metrics statements="20" coveredstatements="20" conditionals="3" coveredconditionals="3" methods="7" coveredmethods="7"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="7" count="1" type="stmt"/>
+        <line num="8" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="16" count="1" type="stmt"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="5" type="stmt"/>
+        <line num="20" count="5" type="stmt"/>
+        <line num="21" count="5" type="cond" truecount="1" falsecount="0"/>
+        <line num="22" count="5" type="stmt"/>
+        <line num="29" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="34" count="1" type="stmt"/>
+        <line num="35" count="2" type="stmt"/>
+        <line num="38" count="1" type="stmt"/>
+        <line num="39" count="1" type="stmt"/>
+        <line num="42" count="1" type="stmt"/>
+        <line num="43" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="src.services">
+      <metrics statements="39" coveredstatements="35" conditionals="9" coveredconditionals="6" methods="9" coveredmethods="7"/>
+      <file name="jobQueue.ts" path="/Users/shantanu/Desktop/netelixir/forecastai-app/backend/src/services/jobQueue.ts">
+        <metrics statements="39" coveredstatements="35" conditionals="9" coveredconditionals="6" methods="9" coveredmethods="7"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="15" count="1" type="stmt"/>
+        <line num="18" count="5" type="stmt"/>
+        <line num="19" count="5" type="stmt"/>
+        <line num="26" count="5" type="stmt"/>
+        <line num="30" count="5" type="cond" truecount="1" falsecount="1"/>
+        <line num="34" count="2" type="stmt"/>
+        <line num="35" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="36" count="2" type="stmt"/>
+        <line num="37" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="38" count="2" type="stmt"/>
+        <line num="39" count="2" type="stmt"/>
+        <line num="40" count="2" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="49" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="1" type="stmt"/>
+        <line num="52" count="1" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+        <line num="58" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="59" count="1" type="stmt"/>
+        <line num="60" count="1" type="stmt"/>
+        <line num="61" count="1" type="stmt"/>
+        <line num="62" count="1" type="stmt"/>
+        <line num="63" count="1" type="stmt"/>
+        <line num="68" count="0" type="stmt"/>
+        <line num="69" count="0" type="stmt"/>
+        <line num="70" count="0" type="cond" truecount="0" falsecount="1"/>
+        <line num="72" count="0" type="stmt"/>
+        <line num="76" count="5" type="stmt"/>
+        <line num="77" count="5" type="stmt"/>
+        <line num="78" count="6" type="stmt"/>
+        <line num="79" count="6" type="cond" truecount="1" falsecount="0"/>
+        <line num="84" count="1" type="stmt"/>
+        <line num="86" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
