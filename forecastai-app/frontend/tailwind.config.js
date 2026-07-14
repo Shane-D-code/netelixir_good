@@ -4,6 +4,31 @@ export default {
   theme: {
     extend: {
       colors: {
+        bg: {
+          main: '#FAFAF8',
+          section: '#F3F2EF',
+          card: '#F6F6F4',
+          hover: '#ECECE8',
+          active: '#E5E5E0',
+        },
+        border: {
+          DEFAULT: '#D9D9D6',
+          card: 'rgba(217, 217, 214, 0.5)',
+          divider: '#CFCFCB',
+        },
+        text: {
+          primary: '#111111',
+          secondary: '#444444',
+          tertiary: '#666666',
+          muted: '#777777',
+        },
+        accent: {
+          DEFAULT: '#C8A86B',
+          light: '#D9C192',
+          dark: '#B8955A',
+          glow: 'rgba(200, 168, 107, 0.12)',
+          soft: '#AEBBA0',
+        },
         dark: {
           100: '#141414',
           200: '#2B2B2B',
@@ -16,14 +41,6 @@ export default {
           800: 'rgba(0, 0, 0, 0.06)',
           900: 'rgba(0, 0, 0, 0.04)',
           950: '#EFEDE6',
-        },
-        accent: {
-          DEFAULT: '#141414',
-          light: '#5A5A55',
-          dark: '#000000',
-          glow: 'rgba(20, 20, 20, 0.06)',
-          soft: '#AEBBA0',
-          'soft-glow': 'rgba(174, 187, 160, 0.18)',
         },
         success: {
           DEFAULT: '#4A6B43',
@@ -47,6 +64,7 @@ export default {
         'slide-up': 'slideUp 0.6s ease-out',
         'fade-in': 'fadeIn 0.8s ease-out',
         'spin-slow': 'spin 8s linear infinite',
+        'pulse-slow': 'pulse 3s ease-in-out infinite',
       },
       keyframes: {
         float: {
