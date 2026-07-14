@@ -4,3 +4,8 @@ dist/
 __pycache__/
 *.pyc
 .env
+
+# SQLite database files
+*.db
+*.db-wal
+*.db-shm
