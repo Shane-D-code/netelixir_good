@@ -1,70 +1,63 @@
-# Netelixir — ForecastAI
+# 📝 REWRITE README.md – Complete Clean Version
+
+```markdown
+# ForecastAI — Probabilistic E-commerce Revenue Forecasting
 
 Enterprise-grade probabilistic forecasting platform for e-commerce revenue prediction across Google Ads, Meta Ads, and Microsoft Ads channels.
 
 ---
 
-## Tech Stack
+## 📋 Overview
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | React 18, TypeScript, Tailwind CSS, Recharts, Zustand, React Query |
-| Backend | Node.js, Express, TypeScript |
-| ML Engine | 5-model ensemble (AutoARIMA, AutoETS, AutoTheta, SeasonalNaive, HistoricAverage) + Monte Carlo |
-| Database | SQLite (better-sqlite3) |
-| Cache | node-cache (in-memory) |
-| Realtime | Socket.IO (WebSocket) |
-| Auth | JWT |
-| Docs | Swagger / OpenAPI |
-| Monitoring | prom-client (Prometheus metrics) |
-| LLM AI | Groq API (primary) + Gemini API (fallback) for insights |
+ForecastAI is an AI-assisted forecasting utility designed for digital marketing agencies to predict future revenue and ROAS across multiple ad channels. It combines statistical modeling, machine learning, and LLM-powered insights to provide probabilistic forecasts with confidence intervals.
+
+### Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Probabilistic Forecasting** | 5-model ensemble with Monte Carlo simulation (P5-P95 confidence) |
+| **Multi-Channel Support** | Google Ads, Meta Ads, Microsoft Ads channel decomposition |
+| **Budget Optimization** | Elasticity modeling, ROAS maximization, what-if scenarios |
+| **AI-Powered Insights** | Groq + Gemini LLM integration for forecast explanations, risk identification, and budget recommendations |
+| **Real-Time Updates** | WebSocket progress tracking during forecast generation |
+| **Comprehensive Analytics** | Anomaly detection, causal inference, campaign decomposition, seasonality detection, risk metrics |
+| **Exportable Reports** | CSV, Excel, PDF, and JSON exports |
+| **JWT Authentication** | Secure user authentication and route protection |
+| **Swagger API Docs** | Auto-generated OpenAPI documentation |
 
 ---
 
-## Startup Guide (Without Docker)
+## 🚀 Quick Start
 
 ### Prerequisites
 
-Make sure you have the following installed:
-
-- **Node.js** >= 18.x — [Download](https://nodejs.org/)
-- **npm** >= 9.x (comes with Node)
-- **Python** >= 3.10 — [Download](https://www.python.org/downloads/)
-- **pip3** (comes with Python)
-
-Verify your installation:
+| Requirement | Version |
+|-------------|---------|
+| Node.js | >= 18.x |
+| npm | >= 9.x |
+| Python | >= 3.10 |
+| pip3 | Comes with Python |
 
 ```bash
 node -v    # v18.x or higher
 npm -v     # 9.x or higher
 python3 --version  # 3.10 or higher
-pip3 --version
 ```
 
-### Option A — One-Command Startup (Recommended)
-
-From the project root:
+### One-Command Startup (Recommended)
 
 ```bash
+git clone https://github.com/yourusername/netelixir_good.git
+cd netelixir_good
 chmod +x start.sh
 ./start.sh
 ```
 
-This script will:
-1. Check that all prerequisites are installed
-2. Copy `.env.example` to `.env` if it doesn't exist
-3. Install npm dependencies for backend and frontend (if missing)
-4. Create a Python virtual environment and install ML service dependencies (if missing)
-5. Start all 3 services in parallel
-
 Press **Ctrl+C** to stop all services.
 
-### Option B — Manual Startup (3 Terminals)
-
-Open 3 separate terminal windows and run each command:
+### Manual Startup (3 Terminals)
 
 **Terminal 1 — ML Service (Python FastAPI):**
-
 ```bash
 cd forecastai-app/ml-service
 python3 -m venv .venv
@@ -73,17 +66,15 @@ pip install -r requirements.txt
 uvicorn core.app:app --host 0.0.0.0 --port 8001 --reload
 ```
 
-**Terminal 2 — Backend (Node.js Express):**
-
+**Terminal 2 — Backend (Node.js):**
 ```bash
 cd forecastai-app/backend
-cp ../../.env.example .env   # or configure manually
+cp .env.example .env   # Configure environment variables
 npm install
 npm run dev
 ```
 
-**Terminal 3 — Frontend (React + Vite):**
-
+**Terminal 3 — Frontend (React):**
 ```bash
 cd forecastai-app/frontend
 npm install
@@ -102,9 +93,9 @@ npm run dev
 
 ---
 
-## Environment Variables
+## 🔧 Environment Variables
 
-Copy `.env.example` to `.env` in the project root and configure:
+Copy `.env.example` to `.env` in the project root:
 
 ```bash
 cp .env.example .env
@@ -115,129 +106,114 @@ cp .env.example .env
 | `PORT` | 3001 | Backend API port |
 | `NODE_ENV` | development | Environment mode |
 | `CORS_ORIGIN` | http://localhost:3000 | Allowed CORS origin |
-| `RATE_LIMIT_WINDOW_MS` | 900000 | Rate limit window (15 min) |
-| `RATE_LIMIT_MAX_REQUESTS` | 100 | Max requests per window |
-| `DATABASE_PATH` | ./data/forecastai.db | SQLite database path |
 | `JWT_SECRET` | — | JWT signing secret (set a strong value) |
+| `DATABASE_PATH` | ./data/forecastai.db | SQLite database path |
 | `ML_SERVICE_URL` | http://localhost:8001 | ML microservice URL |
 | `GROQ_API_KEY` | — | Groq API key (optional, free tier available) |
 | `GEMINI_API_KEY` | — | Gemini API key (optional, fallback for Groq) |
 | `REDIS_URL` | — | Redis URL (optional, falls back to in-memory cache) |
+| `RATE_LIMIT_MAX_REQUESTS` | 100 | Max requests per 15-minute window |
 
 > **Note:** LLM AI insights (Groq/Gemini) are optional. The app works fully without them using rule-based fallbacks.
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-netelixir/
+netelixir_good/
 ├── .env.example              # Environment template
-├── start.sh                  # One-command startup (all 3 services)
-├── forecastai-app/
-│   ├── frontend/             # React SPA (Vite + TypeScript)
-│   │   └── src/
-│   │       ├── features/     # Dashboard, Forecast, Budget, Analytics, Alerts, etc.
-│   │       ├── services/     # API integration, WebSocket client
-│   │       ├── store/        # Zustand state management
-│   │       └── shared/       # Layout, UI components, styles
-│   ├── backend/              # Express API (TypeScript)
-│   │   ├── src/
-│   │   │   ├── features/     # Auth, Forecasting, Analytics, Budget, LLM, etc.
-│   │   │   ├── core/         # Database, Config, Cache, Monitoring
-│   │   │   └── shared/       # Middleware, Types, Utils
-│   │   └── sample_data.csv   # Sample data for testing
-│   ├── ml-service/           # Python FastAPI microservice
-│   │   ├── core/             # FastAPI app entry point
-│   │   ├── features/         # Forecasting, Anomaly Detection, Causal Inference
-│   │   └── requirements.txt  # Python dependencies
-│   ├── data/                 # SQLite database (auto-created)
-│   └── docs/                 # API, Architecture, Deployment, Features docs
-└── .github/workflows/ci.yml  # CI pipeline
+├── start.sh                  # One-command startup script
+├── run.sh                    # CLI entry point for hackathon submission
+├── requirements.txt          # Python dependencies for CLI pipeline
+├── data/                     # Input data (sample CSV)
+├── pickle/                   # Trained model (pickle file)
+├── output/                   # Forecast output directory
+├── src/                      # CLI pipeline source
+│   ├── generate_features.py
+│   └── predict.py
+├── scripts/                  # Training scripts
+│   └── train_and_save_model.py
+└── forecastai-app/
+    ├── frontend/             # React SPA (Vite + TypeScript)
+    │   ├── src/
+    │   │   ├── features/     # Dashboard, Forecast, Budget, Analytics, Alerts
+    │   │   ├── services/     # API integration, WebSocket client
+    │   │   ├── store/        # Zustand state management
+    │   │   └── shared/       # Layout, UI components, styles
+    │   ├── package.json
+    │   └── tailwind.config.js
+    ├── backend/              # Express API (TypeScript)
+    │   ├── src/
+    │   │   ├── features/     # Auth, Forecasting, Analytics, Budget, LLM
+    │   │   ├── core/         # Database, Config, Cache, Monitoring
+    │   │   └── shared/       # Middleware, Types, Utils
+    │   ├── package.json
+    │   └── tsconfig.json
+    ├── ml-service/           # Python FastAPI ML microservice
+    │   ├── core/             # FastAPI app entry point
+    │   ├── features/         # Forecasting, Anomaly, Causal
+    │   └── requirements.txt
+    ├── docs/                 # Documentation
+    │   ├── API.md
+    │   ├── ARCHITECTURE.md
+    │   ├── DEPLOYMENT.md
+    │   └── FEATURES.md
+    └── data/                 # SQLite database (auto-created)
 ```
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│                    CLIENT (port 3000)                     │
-│           React + Recharts + Zustand + Tailwind          │
-└────────────────────────┬─────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                     CLIENT (port 3000)                       │
+│           React + Recharts + Zustand + Tailwind             │
+└────────────────────────┬─────────────────────────────────────┘
                          │ HTTP / WebSocket
                          ▼
-┌──────────────────────────────────────────────────────────┐
-│                  BACKEND (port 3001)                      │
-│   Express + TypeScript + SQLite + JWT + Socket.IO        │
-│   Swagger Docs · Prometheus Metrics · Rate Limiting      │
-└────────────────────────┬─────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                   BACKEND (port 3001)                        │
+│   Express + TypeScript + SQLite + JWT + Socket.IO           │
+│   Swagger Docs · Prometheus Metrics · Rate Limiting         │
+└────────────────────────┬─────────────────────────────────────┘
                          │
                          ▼
-┌──────────────────────────────────────────────────────────┐
-│                 ML SERVICE (port 8001)                    │
-│   FastAPI + StatsForecast + scikit-learn + Monte Carlo   │
-│   AutoARIMA · AutoETS · AutoTheta · SeasonalNaive        │
-│   Anomaly Detection · Causal Inference                    │
-└──────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│                  ML SERVICE (port 8001)                      │
+│   FastAPI + StatsForecast + scikit-learn + Monte Carlo      │
+│   AutoARIMA · AutoETS · AutoTheta · SeasonalNaive           │
+│   Anomaly Detection · Causal Inference                      │
+└──────────────────────────────────────────────────────────────┘
 ```
 
----
-
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/health` | GET | Health check |
-| `/api/auth/register` | POST | Register user |
-| `/api/auth/login` | POST | Login |
-| `/api/upload/csv` | POST | Upload CSV data |
-| `/api/forecast/generate` | POST | Generate forecast |
-| `/api/forecast/status/:id` | GET | Forecast job status |
-| `/api/forecast/export/:id` | GET | Export forecast CSV |
-| `/api/forecast/compare` | POST | Compare multiple forecasts |
-| `/api/budget/simulate` | POST | What-if budget simulation |
-| `/api/budget/optimize` | POST | Budget allocation optimization |
-| `/api/budget/elasticity/:channel` | GET | Elasticity curve data |
-| `/api/analytics/metrics` | POST | Performance metrics |
-| `/api/analytics/anomalies` | POST | Anomaly detection |
-| `/api/analytics/causal` | POST | Causal impact analysis |
-| `/api/analytics/campaigns` | POST | Campaign analysis |
-| `/api/analytics/seasonality` | POST | Seasonality detection |
-| `/api/analytics/roas-optimize` | POST | ROAS optimization |
-| `/api/analytics/validate` | POST | Data validation |
-| `/api/analytics/insights` | POST | Operational insights |
-| `/api/analytics/explain/anomaly` | POST | AI anomaly interpretation |
-| `/api/analytics/explain/forecast` | POST | AI forecast explanation |
-| `/api/analytics/risks` | POST | AI risk identification |
-| `/api/analytics/budget-advice` | POST | AI budget recommendations |
-| `/api/analytics/causal-summary` | POST | AI causal summary |
-| `/api/holidays` | GET | Holiday calendar |
-| `/api/holidays/upcoming` | GET | Upcoming holidays |
-| `/api/holidays/check/:date` | GET | Check holiday impact |
-
----
-
-## ML Pipeline
+### ML Pipeline
 
 The forecasting engine uses a **5-model ensemble** with **Monte Carlo simulation**:
 
-1. **AutoARIMA** — Automatic ARIMA model selection
-2. **AutoETS** — Exponential smoothing with automatic parameter tuning
-3. **AutoTheta** — Theta method for trend decomposition
-4. **SeasonalNaive** — Seasonal baseline model
-5. **HistoricAverage** — Historical mean baseline
+| Model | Description |
+|-------|-------------|
+| **AutoARIMA** | Automatic ARIMA model selection with seasonal decomposition |
+| **AutoETS** | Exponential smoothing with automatic parameter tuning |
+| **AutoTheta** | Theta method for trend decomposition |
+| **SeasonalNaive** | Seasonal baseline model |
+| **HistoricAverage** | Historical mean baseline |
 
-Models are weighted via **backtesting** on historical data. Monte Carlo simulation (500+ iterations) produces probabilistic forecasts at **P10/P25/P50/P75/P90** confidence levels.
+- Models weighted via **backtesting** (inverse MAPE weighting)
+- **Monte Carlo simulation** (1000+ iterations) for probabilistic forecasts
+- Confidence levels: **P5, P10, P25, P50, P75, P90, P95**
+- **Adaptive ensemble** - dynamic weight adjustment based on recent performance
 
-Additional ML capabilities:
+### Additional ML Capabilities
+
 - **Anomaly Detection** — IsolationForest from scikit-learn
 - **Causal Inference** — Lag correlation, driver attribution, anomaly-cause linking
-- **Adaptive Ensemble** — Dynamic model weight adjustment based on recent performance
+- **Seasonality Detection** — ACF autocorrelation + FFT spectral analysis
 
 ---
 
-## LLM AI Integration
+## 🤖 LLM AI Integration
 
 The platform uses **Groq API (primary)** with **Gemini API (fallback)** for AI-powered insights:
 
@@ -253,6 +229,87 @@ The service automatically falls back to Gemini if Groq is unavailable, and uses 
 
 ---
 
-## License
+## 📊 API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Health check |
+| `/api/auth/register` | POST | Register user |
+| `/api/auth/login` | POST | Login |
+| `/api/upload/csv` | POST | Upload CSV data |
+| `/api/forecast/generate` | POST | Generate forecast (async, returns jobId) |
+| `/api/forecast/status/:id` | GET | Forecast job status |
+| `/api/forecast/export/:id` | GET | Export forecast CSV |
+| `/api/budget/simulate` | POST | What-if budget simulation |
+| `/api/budget/optimize` | POST | Budget allocation optimization |
+| `/api/analytics/metrics` | POST | Performance metrics |
+| `/api/analytics/anomalies` | POST | Anomaly detection |
+| `/api/analytics/causal` | POST | Causal impact analysis |
+| `/api/analytics/campaigns` | POST | Campaign analysis |
+| `/api/analytics/seasonality` | POST | Seasonality detection |
+| `/api/analytics/roas-optimize` | POST | ROAS optimization |
+| `/api/analytics/insights` | POST | Operational insights |
+
+Full API documentation available at `/api-docs`.
+
+---
+
+## 🧪 Testing
+
+### Backend Tests
+```bash
+cd forecastai-app/backend
+npm test
+```
+
+### Frontend Tests
+```bash
+cd forecastai-app/frontend
+npm test
+```
+
+### ML Service Tests
+```bash
+cd forecastai-app/ml-service
+source .venv/bin/activate
+pytest tests/
+```
+
+---
+
+## 🐳 Docker Deployment
+
+```bash
+docker-compose up -d
+```
+
+Services start on their respective ports:
+- Frontend: http://localhost:3000
+- Backend: http://localhost:3001
+- ML Service: http://localhost:8001
+
+---
+
+## 📄 License
 
 Proprietary. All rights reserved.
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit your changes (`git commit -m "feat: your feature description"`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Create a Pull Request
+
+---
+
+## 📚 Documentation
+
+- [API Reference](docs/API.md)
+- [Architecture Overview](docs/ARCHITECTURE.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Features Documentation](docs/FEATURES.md)
+```
