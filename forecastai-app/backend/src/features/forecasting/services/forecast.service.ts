@@ -33,7 +33,7 @@ export function parseCSVData(csvContent: string): RawDataRow[] {
     for (const [key, val] of Object.entries(record)) {
       const lowerKey = key.toLowerCase().trim();
       const strVal = String(val || '').trim();
-      if (lowerKey === 'date') normalized['date'] = strVal;
+      if (lowerKey === 'date') normalized['date'] = strVal.split(' ')[0].split('T')[0];
       else if (lowerKey === 'revenue' || lowerKey === 'sales' || lowerKey === 'conversions_value') {
         normalized['revenue'] = parseFloat(strVal) || 0;
       } else if (lowerKey === 'channel' || lowerKey === 'source' || lowerKey === 'campaign') {

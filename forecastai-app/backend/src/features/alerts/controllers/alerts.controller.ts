@@ -10,7 +10,7 @@ export async function generateAlerts(req: Request, res: Response, next: NextFunc
       throw new ValidationError('data is required');
     }
 
-    const result = alertIntelligence.generateAlerts(data, forecastResult || {});
+    const result = await alertIntelligence.generateAlerts(data, forecastResult || {});
 
     res.json({ success: true, data: result });
   } catch (err) {
@@ -28,7 +28,7 @@ export async function getAlerts(req: Request, res: Response, next: NextFunction)
     if (startDate) filters.startDate = startDate as string;
     if (endDate) filters.endDate = endDate as string;
 
-    const result = alertIntelligence.getAlerts(Object.keys(filters).length > 0 ? filters : undefined);
+    const result = await alertIntelligence.getAlerts(Object.keys(filters).length > 0 ? filters : undefined);
 
     res.json({ success: true, data: result });
   } catch (err) {
@@ -44,7 +44,7 @@ export async function acknowledgeAlert(req: Request, res: Response, next: NextFu
       throw new ValidationError('alert id is required');
     }
 
-    const result = alertIntelligence.acknowledgeAlert(id);
+    const result = await alertIntelligence.acknowledgeAlert(id);
 
     res.json({ success: true, data: { acknowledged: result } });
   } catch (err) {
@@ -54,7 +54,7 @@ export async function acknowledgeAlert(req: Request, res: Response, next: NextFu
 
 export async function acknowledgeAllAlerts(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const count = alertIntelligence.acknowledgeAll();
+    const count = await alertIntelligence.acknowledgeAll();
 
     res.json({ success: true, data: { acknowledged: count } });
   } catch (err) {
@@ -64,7 +64,7 @@ export async function acknowledgeAllAlerts(req: Request, res: Response, next: Ne
 
 export async function getUnreadCount(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const count = alertIntelligence.getUnreadCount();
+    const count = await alertIntelligence.getUnreadCount();
 
     res.json({ success: true, data: { count } });
   } catch (err) {

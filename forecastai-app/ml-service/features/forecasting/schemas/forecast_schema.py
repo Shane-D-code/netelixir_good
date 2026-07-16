@@ -31,6 +31,7 @@ class DataPoint(BaseModel):
     @field_validator("date")
     @classmethod
     def validate_date(cls, v: str) -> str:
+        v = v.strip().split(" ")[0].split("T")[0]
         try:
             dt = datetime.strptime(v, "%Y-%m-%d")
         except ValueError:

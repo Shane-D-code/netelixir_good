@@ -60,7 +60,7 @@ function detectDip(arr: number[]): boolean {
 }
 
 export class AlertIntelligenceService {
-  generateAlerts(data: any[], forecastResult: any): Alert[] {
+  async generateAlerts(data: any[], forecastResult: any): Promise<Alert[]> {
     const newAlerts: Alert[] = [];
     const now = new Date().toISOString();
 
@@ -230,23 +230,23 @@ export class AlertIntelligenceService {
 
     newAlerts.sort((a, b) => (SEVERITY_WEIGHTS[b.severity] || 0) - (SEVERITY_WEIGHTS[a.severity] || 0));
 
-    saveAlerts(newAlerts);
+    await saveAlerts(newAlerts);
     return newAlerts;
   }
 
-  acknowledgeAlert(alertId: string): boolean {
+  async acknowledgeAlert(alertId: string): Promise<boolean> {
     return acknowledgeAlertById(alertId);
   }
 
-  acknowledgeAll(): number {
+  async acknowledgeAll(): Promise<number> {
     return dbAcknowledgeAll();
   }
 
-  getAlerts(filters?: AlertFilters): Alert[] {
+  async getAlerts(filters?: AlertFilters): Promise<Alert[]> {
     return getAllAlerts(filters);
   }
 
-  getUnreadCount(): number {
+  async getUnreadCount(): Promise<number> {
     return getUnreadAlertCount();
   }
 }

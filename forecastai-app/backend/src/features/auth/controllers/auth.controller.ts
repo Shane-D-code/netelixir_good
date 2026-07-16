@@ -38,13 +38,13 @@ export async function register(req: Request, res: Response, next: NextFunction) 
       throw new ValidationError('Password must be at least 8 characters');
     }
 
-    const existing = getUserByEmail(email);
+    const existing = await getUserByEmail(email);
     if (existing) {
       throw new AuthError('Email already registered. Please login.');
     }
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-    const user = createUser(email, name, hashedPassword);
+    const user = await createUser(email, name, hashedPassword);
     const token = generateToken(user.id, user.email);
     res.status(201).json({ success: true, token, user: { id: user.id, email: user.email, name: user.name } });
   } catch (err) {
@@ -80,7 +80,7 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     if (!email) throw new ValidationError('Email is required');
     if (!password) throw new ValidationError('Password is required');
 
-    const user = getUserByEmail(email);
+    const user = await getUserByEmail(email);
     if (!user) throw new AuthError('Invalid credentials');
 
     if (!user.password) {

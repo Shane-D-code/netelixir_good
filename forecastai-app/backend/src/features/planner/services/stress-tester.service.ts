@@ -5,18 +5,31 @@ export interface StressScenario {
   parameters: Record<string, number>;
 }
 
+interface InternalScenarioResult {
+  name: string;
+  type: string;
+  description: string;
+  revenueImpact: number;
+  roasImpact: number;
+  confidence: number;
+  recommendation: string;
+  severity: 'low' | 'medium' | 'high';
+  severityScore: number;
+}
+
 export interface StressTestResult {
   scenarios: Array<{
     name: string;
     type: string;
     description: string;
-    revenueImpact: number;
-    roasImpact: number;
-    confidence: number;
+    revenue_impact_dollar: number;
+    revenue_impact_percent: number;
+    roas_impact: number;
+    confidence_score: number;
     recommendation: string;
     severity: 'low' | 'medium' | 'high';
   }>;
-  overallResilience: number;
+  overall_resilience_score: number;
 }
 
 const DEFAULT_SCENARIOS: StressScenario[] = [
@@ -57,7 +70,7 @@ export class StressTesterService {
 
     const baseline = this.computeBaseline(data, budgets, totalBudget);
 
-    const scenarioResults: Array<StressTestResult['scenarios'][0] & { severityScore: number }> = [];
+    const scenarioResults: InternalScenarioResult[] = [];
 
     for (const scenario of scenarios) {
       const result = this.runScenario(scenario, baseline, totalBudget);
@@ -70,8 +83,14 @@ export class StressTesterService {
     const overallResilience = Math.round(Math.max(0, Math.min(100, (1 - avgSeverity) * 100)));
 
     return {
-      scenarios: scenarioResults.map(({ severityScore: _, ...rest }) => rest),
-      overallResilience,
+      scenarios: scenarioResults.map(({ severityScore: _, revenueImpact, roasImpact, confidence, ...rest }) => ({
+        ...rest,
+        revenue_impact_dollar: Math.round(revenueImpact * 100) / 100,
+        revenue_impact_percent: Math.round(revenueImpact * 100) / 100,
+        roas_impact: Math.round(roasImpact * 100) / 100,
+        confidence_score: Math.round(confidence * 100) / 100,
+      })),
+      overall_resilience_score: overallResilience,
     };
   }
 
@@ -120,7 +139,7 @@ export class StressTesterService {
     scenario: StressScenario,
     baseline: ReturnType<typeof StressTesterService.prototype.computeBaseline>,
     totalBudget: number
-  ): StressTestResult['scenarios'][0] & { severityScore: number } {
+  ): InternalScenarioResult {
     let revenueImpact = 0;
     let roasImpact = 0;
     let recommendation = '';

@@ -233,7 +233,14 @@ export default function StressTestPage({ embedded }: { embedded?: boolean } = {}
         <div className="grid gap-6 sm:grid-cols-2">
           {result
             ? result.scenarios.map((scenario, i) => {
-                const severityCfg = SEVERITY_CONFIG[scenario.severity];
+                const safeScenario = {
+                  ...scenario,
+                  revenue_impact_dollar: scenario.revenue_impact_dollar ?? scenario.revenueImpact ?? 0,
+                  revenue_impact_percent: scenario.revenue_impact_percent ?? scenario.revenueImpact ?? 0,
+                  roas_impact: scenario.roas_impact ?? scenario.roasImpact ?? 0,
+                  confidence_score: scenario.confidence_score ?? scenario.confidence ?? 0,
+                };
+                const severityCfg = SEVERITY_CONFIG[safeScenario.severity];
                 return (
                   <GlassCard key={i}>
                     <div className="space-y-4">
@@ -246,27 +253,27 @@ export default function StressTestPage({ embedded }: { embedded?: boolean } = {}
                             {SCENARIOS[i]?.icon || '⚡'}
                           </div>
                           <div>
-                            <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{scenario.name}</h3>
-                            <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{scenario.description}</p>
+                            <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>{safeScenario.name}</h3>
+                            <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{safeScenario.description}</p>
                           </div>
                         </div>
-                        <SeverityBadge severity={scenario.severity} />
+                        <SeverityBadge severity={safeScenario.severity} />
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
                         <div className="rounded-lg p-3" style={{ background: 'var(--bg-hover)' }}>
                           <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Revenue Impact</p>
-                          <p className={classNames('text-lg font-bold', scenario.revenue_impact_dollar >= 0 ? 'trend-up' : 'trend-down')}>
-                            {formatCurrency(scenario.revenue_impact_dollar)}
+                          <p className={classNames('text-lg font-bold', safeScenario.revenue_impact_dollar >= 0 ? 'trend-up' : 'trend-down')}>
+                            {formatCurrency(safeScenario.revenue_impact_dollar)}
                           </p>
-                          <p className={classNames('text-xs font-medium', scenario.revenue_impact_percent >= 0 ? 'trend-up' : 'trend-down')}>
-                            {scenario.revenue_impact_percent >= 0 ? '+' : ''}{scenario.revenue_impact_percent.toFixed(1)}%
+                          <p className={classNames('text-xs font-medium', safeScenario.revenue_impact_percent >= 0 ? 'trend-up' : 'trend-down')}>
+                            {safeScenario.revenue_impact_percent >= 0 ? '+' : ''}{safeScenario.revenue_impact_percent.toFixed(1)}%
                           </p>
                         </div>
                         <div className="rounded-lg p-3" style={{ background: 'var(--bg-hover)' }}>
                           <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>ROAS Impact</p>
-                          <p className={classNames('text-lg font-bold', scenario.roas_impact >= 0 ? 'trend-up' : 'trend-down')}>
-                            {scenario.roas_impact.toFixed(2)}x
+                          <p className={classNames('text-lg font-bold', safeScenario.roas_impact >= 0 ? 'trend-up' : 'trend-down')}>
+                            {safeScenario.roas_impact.toFixed(2)}x
                           </p>
                         </div>
                       </div>
@@ -275,14 +282,14 @@ export default function StressTestPage({ embedded }: { embedded?: boolean } = {}
                         <div className="flex items-center gap-2">
                           <div className="h-1.5 w-1.5 rounded-full" style={{ background: severityCfg.color }} />
                           <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                            Confidence: {scenario.confidence_score}%
+                            Confidence: {safeScenario.confidence_score}%
                           </span>
                         </div>
                       </div>
 
                       <div className="rounded-lg p-3" style={{ background: 'var(--bg-hover)' }}>
                         <p className="mb-1 text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Recommendation</p>
-                        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>{scenario.recommendation}</p>
+                        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-tertiary)' }}>{safeScenario.recommendation}</p>
                       </div>
                     </div>
                   </GlassCard>

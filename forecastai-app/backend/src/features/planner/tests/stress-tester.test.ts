@@ -7,8 +7,18 @@ describe('StressTesterService', () => {
   it('should run stress tests and return scenarios', () => {
     const result = service.runStressTest([], mockBudgets);
     expect(result).toHaveProperty('scenarios');
-    expect(result).toHaveProperty('overallResilience');
+    expect(result).toHaveProperty('overall_resilience_score');
     expect(result.scenarios.length).toBeGreaterThan(0);
+  });
+
+  it('should expose planner-friendly metric fields for each scenario', () => {
+    const result = service.runStressTest([{ channel: 'Google Ads', revenue: 10000, spend: 2500 }], mockBudgets);
+    const firstScenario = result.scenarios[0];
+
+    expect(firstScenario).toHaveProperty('revenue_impact_dollar');
+    expect(firstScenario).toHaveProperty('revenue_impact_percent');
+    expect(firstScenario).toHaveProperty('roas_impact');
+    expect(firstScenario).toHaveProperty('confidence_score');
   });
 
   it('should include all 4 scenario types', () => {
@@ -24,9 +34,10 @@ describe('StressTesterService', () => {
     const result = service.runStressTest([], mockBudgets);
     result.scenarios.forEach(scenario => {
       expect(scenario).toHaveProperty('name');
-      expect(scenario).toHaveProperty('revenueImpact');
-      expect(scenario).toHaveProperty('roasImpact');
-      expect(scenario).toHaveProperty('confidence');
+      expect(scenario).toHaveProperty('revenue_impact_dollar');
+      expect(scenario).toHaveProperty('revenue_impact_percent');
+      expect(scenario).toHaveProperty('roas_impact');
+      expect(scenario).toHaveProperty('confidence_score');
       expect(scenario).toHaveProperty('recommendation');
       expect(scenario).toHaveProperty('severity');
     });
